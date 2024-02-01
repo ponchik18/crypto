@@ -2,9 +2,9 @@ package repository
 
 import java.util.*
 
-interface Repository<Item> where Item : UniqueItem {
-    fun getItem(id: UUID): Item?
-    fun getAllItem(): List<Item>
+interface Repository<Item> where Item : Identifiable {
+    fun findById(id: UUID): Item?
+    fun findAll(): List<Item>
     fun save(item: Item)
     fun delete(id: UUID)
 }

@@ -1,4 +1,3 @@
 package domain.exception
 
-class SwapTransactionNotProcessException : RuntimeException("Swap transaction not processed exception!") {
-}
+class SwapTransactionNotProcessException : RuntimeException("Swap transaction not processed exception!")

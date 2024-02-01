@@ -1,10 +1,10 @@
 package domain
 
-import repository.UniqueItem
+import repository.Identifiable
 import java.math.BigDecimal
 import java.util.*
 
-class Wallet : UniqueItem {
+class Wallet : Identifiable {
     val name: String
     var isCold: Boolean
     val cryptoCurrencies: MutableMap<Currency, BigDecimal> = mutableMapOf()
@@ -18,9 +18,7 @@ class Wallet : UniqueItem {
     }
 
     fun topUpWallet(currency: Currency, amount: BigDecimal) {
-        val cryptoCurrencyValue = cryptoCurrencies[currency]?: BigDecimal.ZERO
+        val cryptoCurrencyValue = cryptoCurrencies.getOrDefault(currency, BigDecimal.ZERO)
         cryptoCurrencies[currency] = amount.add(cryptoCurrencyValue)
     }
-
-    override fun getUniqueId(): UUID = id
 }

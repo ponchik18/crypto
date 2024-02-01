@@ -2,23 +2,23 @@ package repository
 
 import java.util.*
 
-open class GenericRepository<Item> : Repository<Item> where Item : UniqueItem {
+open class GenericRepository<Item> : Repository<Item> where Item : Identifiable {
     private val items: MutableList<Item> = mutableListOf()
 
-    override fun getItem(id: UUID): Item? =
-        items.find { it -> it.getUniqueId() == id }
+    override fun findById(id: UUID): Item? =
+        items.find { it -> it.id == id }
 
-    override fun getAllItem(): List<Item> = items
+    override fun findAll(): List<Item> = items
 
     override fun save(item: Item) {
-        if (items.any { it -> it.getUniqueId() == item.getUniqueId() }) {
-            items.replaceAll { if (it.getUniqueId() == item.getUniqueId()) item else it }
+        if (items.any { it.id == item.id }) {
+            items.replaceAll { if (it.id == item.id) item else it }
         } else {
             items.add(item)
         }
     }
 
     override fun delete(id: UUID) {
-        items.removeIf { it.getUniqueId() == id }
+        items.removeIf { it.id == id }
     }
 }

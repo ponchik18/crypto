@@ -6,10 +6,8 @@ import enums.UserStatus
 import repository.impl.CryptoExchangeRepository
 import repository.impl.TransactionRepository
 import repository.impl.UserRepository
-import service.TradingService
-import service.UserService
-import service.impl.TradingServiceImpl
-import service.impl.UserServiceImpl
+import service.TradingServiceImpl
+import service.UserServiceImpl
 import java.math.BigDecimal
 
 
@@ -21,8 +19,8 @@ val userRepository = UserRepository()
 val transactionRepository = TransactionRepository()
 val cryptoExchangeRepository = CryptoExchangeRepository()
 
-var userService: UserService = UserServiceImpl(userRepository, cryptoExchangeRepository)
-var tradingService: TradingService = TradingServiceImpl(cryptoExchangeRepository, transactionRepository)
+var userService = UserServiceImpl(userRepository, cryptoExchangeRepository)
+var tradingService = TradingServiceImpl(cryptoExchangeRepository, transactionRepository)
 
 fun main(args: Array<String>) {
     initData()
@@ -73,13 +71,13 @@ fun main(args: Array<String>) {
 
     println("===========================6)Swap crypto ===========================")
     try {
-    tradingService.swapCrypto(
-        userList[0].wallets.first(),
-        "123456789",
-        cryptoExchangeList[0],
-        usd,
-        userList[0]
-    )
+        tradingService.swapCrypto(
+            userList[0].wallets.first(),
+            "123456789",
+            cryptoExchangeList[0],
+            usd,
+            userList[0]
+        )
     } catch (e: Exception) {
         println(e.message)
     } finally {

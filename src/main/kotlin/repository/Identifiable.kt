@@ -2,7 +2,6 @@ package repository
 
 import java.util.*
 
-interface UniqueItem {
+interface Identifiable {
     val id: UUID
-    fun getUniqueId(): UUID
 }

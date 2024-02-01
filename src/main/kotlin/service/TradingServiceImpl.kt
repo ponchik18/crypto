@@ -1,6 +1,7 @@
-package service.impl
+package service
 
 import domain.CryptoExchange
+import domain.Currency
 import domain.User
 import domain.Wallet
 import domain.exception.NotEnoughAmountToExchangeException
@@ -12,18 +13,16 @@ import domain.transaction.TradeTransaction
 import enums.UserStatus
 import repository.impl.CryptoExchangeRepository
 import repository.impl.TransactionRepository
-import service.TradingService
 import java.math.BigDecimal
 import java.time.Instant
-import domain.Currency
 import kotlin.random.Random
 
 class TradingServiceImpl(
     private val cryptoExchangeRepository: CryptoExchangeRepository,
     private val transactionRepository: TransactionRepository
-) : TradingService {
+) {
 
-    override fun exchangeCryptoCurrency(
+    fun exchangeCryptoCurrency(
         firstUser: User,
         secondUser: User,
         firstUserCryptoCurrency: Pair<Currency, BigDecimal>,
@@ -46,12 +45,12 @@ class TradingServiceImpl(
         exchangeCurrency(secondUserWallet, secondUserCryptoCurrency, firstUserCryptoCurrency)
 
         val tradeTransaction = TradeTransaction(
-            Instant.now(),
-            firstUser,
-            firstUserCryptoCurrency.first,
-            firstUserCryptoCurrency.second,
-            secondUserCryptoCurrency.first,
-            secondUserCryptoCurrency.second
+            date =  Instant.now(),
+            initiator = firstUser,
+            fromCurrency = firstUserCryptoCurrency.first,
+            fromAmount = firstUserCryptoCurrency.second,
+            toCurrency = secondUserCryptoCurrency.first,
+            toAmount = secondUserCryptoCurrency.second
         )
 
         cryptoExchange.transactionHistory.add(tradeTransaction)
@@ -59,20 +58,20 @@ class TradingServiceImpl(
         cryptoExchangeRepository.save(cryptoExchange)
     }
 
-    override fun swapCrypto(
+    fun swapCrypto(
         wallet: Wallet,
         passphrase: String,
         cryptoExchange: CryptoExchange,
         toCurrency: Currency,
         user: User
     ) {
-        if (wallet.passphrase != passphrase) {
+        if (wallet.passphrase != passphrase)
             throw NotRightPassphraseException()
-        }
+
         val randomValue = Random.nextDouble()
-        if (randomValue in 0.0..0.25) {
+        if (randomValue in 0.0..0.25)
             throw SwapTransactionNotProcessException()
-        }
+
         val exchangeRates = cryptoExchange.exchangeRates
         val userCryptoCurrencies = wallet.cryptoCurrencies
         for ((key, value) in userCryptoCurrencies) {
@@ -82,11 +81,11 @@ class TradingServiceImpl(
         }
     }
 
-    override fun getAllCryptoExchange() = cryptoExchangeRepository.getAllItem()
+    fun getAllCryptoExchange() = cryptoExchangeRepository.findAll()
 
     private fun validateUserStatus(user: User) {
         if (user.status != UserStatus.APPROVED)
-            throw UserNotApprovedException(user.getUniqueId())
+            throw UserNotApprovedException(user.id)
     }
 
     private fun findUserWalletThatContainEnoughCryptoCurrency(
@@ -96,11 +95,10 @@ class TradingServiceImpl(
         for (wallet in user.wallets) {
             val cryptoCurrency = wallet.cryptoCurrencies[userCryptoCurrency.first] ?: continue
 
-            if (cryptoCurrency >= userCryptoCurrency.second) {
+            if (cryptoCurrency >= userCryptoCurrency.second)
                 return wallet
-            }
         }
-        throw NotEnoughAmountToExchangeException(user.getUniqueId(), userCryptoCurrency.first)
+        throw NotEnoughAmountToExchangeException(user.id, userCryptoCurrency.first)
     }
 
     private fun exchangeCurrency(
