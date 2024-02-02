@@ -7,9 +7,10 @@ import domain.Currency
 
 class SwapTransaction(
     date: Instant,
-    receiver: User,
+    initiator: User,
     fromCurrency: Currency,
     fromAmount: BigDecimal,
+    val receiver: User,
     val toCurrency: Currency,
     val toAmount: BigDecimal
 ) : Transaction(date, receiver, fromCurrency, fromAmount)

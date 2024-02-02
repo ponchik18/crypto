@@ -4,21 +4,22 @@ import repository.Identifiable
 import java.math.BigDecimal
 import java.util.*
 
-class Wallet : Identifiable {
-    val name: String
-    var isCold: Boolean
-    val cryptoCurrencies: MutableMap<Currency, BigDecimal> = mutableMapOf()
-    var passphrase: String
+class Wallet(
+    val name: String,
+    var isCold: Boolean,
+    var passphrase: String,
+    val cryptoCurrencies: MutableMap<Currency, BigDecimal> = mutableMapOf(),
     override val id: UUID = UUID.randomUUID()
-
-    constructor(name: String, isCold: Boolean, passphrase: String) {
-        this.name = name
-        this.isCold = isCold
-        this.passphrase = passphrase
-    }
+) : Identifiable {
 
     fun topUpWallet(currency: Currency, amount: BigDecimal) {
         val cryptoCurrencyValue = cryptoCurrencies.getOrDefault(currency, BigDecimal.ZERO)
         cryptoCurrencies[currency] = amount.add(cryptoCurrencyValue)
     }
+
+    operator fun component1(): String = name
+    operator fun component2(): Boolean = isCold
+    operator fun component3(): String = passphrase
+    operator fun component4(): Map<Currency, BigDecimal> = cryptoCurrencies
+    operator fun component5(): UUID = id
 }
