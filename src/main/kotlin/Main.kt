@@ -106,7 +106,7 @@ fun main(args: Array<String>) {
     val applicationDependencies = ApplicationDependenciesImpl()
     println(applicationDependencies.fetchData())
     val applicationDependenciesImplDelegation = ApplicationDependenciesImplDelegation(applicationDependencies)
-    println(applicationDependencies.fetchData())
+    println(applicationDependenciesImplDelegation.fetchData())
 
     println("===========================3)Extension function swap for pair ===========================")
     val firstPair = Pair(1, "one")
