@@ -6,7 +6,7 @@ import domain.User
 import domain.Wallet
 import domain.exception.NotEnoughAmountToExchangeException
 import domain.exception.NotRightPassphraseException
-import domain.exception.SwapTransactionNotProcessException
+import domain.exception.TradeTransactionNotProcessException
 import domain.exception.UserNotApprovedException
 import domain.transaction.SwapTransaction
 import domain.transaction.TradeTransaction
@@ -17,12 +17,12 @@ import java.math.BigDecimal
 import java.time.Instant
 import kotlin.random.Random
 
-class TradingServiceImpl(
-    private val cryptoExchangeRepository: CryptoExchangeRepository,
-    private val transactionRepository: TransactionRepository
-) {
+object TradingService{
 
-    fun exchangeCryptoCurrency(
+    private val cryptoExchangeRepository = CryptoExchangeRepository
+    private val transactionRepository = TransactionRepository
+
+    fun swapCurrencyBetweenUsers(
         firstUser: User,
         secondUser: User,
         firstUserCryptoCurrency: Pair<Currency, BigDecimal>,
@@ -44,9 +44,10 @@ class TradingServiceImpl(
         exchangeCurrency(firstUserWallet, firstUserCryptoCurrency, secondUserCryptoCurrency)
         exchangeCurrency(secondUserWallet, secondUserCryptoCurrency, firstUserCryptoCurrency)
 
-        val tradeTransaction = TradeTransaction(
-            date =  Instant.now(),
+        val tradeTransaction = SwapTransaction(
+            date = Instant.now(),
             initiator = firstUser,
+            receiver = secondUser,
             fromCurrency = firstUserCryptoCurrency.first,
             fromAmount = firstUserCryptoCurrency.second,
             toCurrency = secondUserCryptoCurrency.first,
@@ -58,7 +59,7 @@ class TradingServiceImpl(
         cryptoExchangeRepository.save(cryptoExchange)
     }
 
-    fun swapCrypto(
+    fun exchangeCryptoCurrency(
         wallet: Wallet,
         passphrase: String,
         cryptoExchange: CryptoExchange,
@@ -70,14 +71,15 @@ class TradingServiceImpl(
 
         val randomValue = Random.nextDouble()
         if (randomValue in 0.0..0.25)
-            throw SwapTransactionNotProcessException()
+            throw TradeTransactionNotProcessException()
 
         val exchangeRates = cryptoExchange.exchangeRates
         val userCryptoCurrencies = wallet.cryptoCurrencies
         for ((key, value) in userCryptoCurrencies) {
             val rate = exchangeRates[Pair(key, toCurrency)] ?: continue
-            val swapTransaction = SwapTransaction(Instant.now(), user, key, value, toCurrency, rate * value)
-            transactionRepository.save(swapTransaction)
+            val tradeTransaction = TradeTransaction(Instant.now(), user, key, value, toCurrency, rate * value)
+            cryptoExchange.transactionHistory.add(tradeTransaction)
+            transactionRepository.save(tradeTransaction)
         }
     }
 

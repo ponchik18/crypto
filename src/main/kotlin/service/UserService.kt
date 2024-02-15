@@ -10,11 +10,10 @@ import java.text.DecimalFormat
 import java.time.Instant
 import java.util.*
 
-class UserServiceImpl(
-    private val userRepository: UserRepository,
-    private val cryptoExchangeRepository: CryptoExchangeRepository
-) {
+object UserService {
 
+    private val userRepository = UserRepository
+    private val cryptoExchangeRepository = CryptoExchangeRepository
     fun cryptoBalance(vararg wallets: Wallet) {
         for (wallet in wallets) {
             for ((key, value) in wallet.cryptoCurrencies) {
