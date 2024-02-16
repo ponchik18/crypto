@@ -12,6 +12,10 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation(kotlin("reflect"))
+    testImplementation("org.testng:testng:7.1.0")
+    testImplementation("org.testng:testng:7.1.0")
+    testImplementation("org.testng:testng:7.1.0")
 }
 
 tasks.test {

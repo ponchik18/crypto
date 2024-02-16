@@ -86,3 +86,15 @@ fun fibonacci(n: Int): Long {
         }
     }
 }
+
+inline fun <reified T : Exception> throwException(vararg any: Any): Nothing {
+    throw T::class.constructors.first().call(*any)
+}
+
+infix fun <T> Any.convert(clazz: Class<T>): T? {
+    return try {
+        clazz.cast(this)
+    } catch (e: ClassCastException) {
+        null
+    }
+}

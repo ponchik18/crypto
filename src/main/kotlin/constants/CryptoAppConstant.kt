@@ -9,5 +9,6 @@ class CryptoAppConstant {
             val BTC = Currency("Bitcoin", "BTC", "₿")
             val ETH = Currency("Ethereum", "ETH", "Ξ")
         }
+        val FILE_PATH: String = "src/main/resources/log.txt"
     }
 }

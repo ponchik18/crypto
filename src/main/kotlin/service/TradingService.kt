@@ -6,18 +6,18 @@ import domain.User
 import domain.Wallet
 import domain.exception.NotEnoughAmountToExchangeException
 import domain.exception.NotRightPassphraseException
-import domain.exception.TradeTransactionNotProcessException
 import domain.exception.UserNotApprovedException
 import domain.transaction.SwapTransaction
 import domain.transaction.TradeTransaction
 import enums.UserStatus
 import repository.impl.CryptoExchangeRepository
 import repository.impl.TransactionRepository
+import utils.throwException
 import java.math.BigDecimal
 import java.time.Instant
 import kotlin.random.Random
 
-object TradingService{
+object TradingService {
 
     private val cryptoExchangeRepository = CryptoExchangeRepository
     private val transactionRepository = TransactionRepository
@@ -55,8 +55,12 @@ object TradingService{
         )
 
         cryptoExchange.transactionHistory.add(tradeTransaction)
-        transactionRepository.save(tradeTransaction)
-        cryptoExchangeRepository.save(cryptoExchange)
+        transactionRepository.use {
+            it.save(tradeTransaction)
+        }
+        cryptoExchangeRepository.use {
+            it.save(cryptoExchange)
+        }
     }
 
     fun exchangeCryptoCurrency(
@@ -66,12 +70,12 @@ object TradingService{
         toCurrency: Currency,
         user: User
     ) {
-        if (wallet.passphrase != passphrase)
-            throw NotRightPassphraseException()
 
         val randomValue = Random.nextDouble()
-        if (randomValue in 0.0..0.25)
-            throw TradeTransactionNotProcessException()
+        check(randomValue in 0.0..0.25) { "Trade transaction not processed exception!" }
+
+        if (wallet.passphrase != passphrase)
+            throwException<NotRightPassphraseException>()
 
         val exchangeRates = cryptoExchange.exchangeRates
         val userCryptoCurrencies = wallet.cryptoCurrencies
@@ -79,15 +83,17 @@ object TradingService{
             val rate = exchangeRates[Pair(key, toCurrency)] ?: continue
             val tradeTransaction = TradeTransaction(Instant.now(), user, key, value, toCurrency, rate * value)
             cryptoExchange.transactionHistory.add(tradeTransaction)
-            transactionRepository.save(tradeTransaction)
+            transactionRepository.use {
+                it.save(tradeTransaction)
+            }
         }
     }
 
-    fun getAllCryptoExchange() = cryptoExchangeRepository.findAll()
+    fun getAllCryptoExchange() = cryptoExchangeRepository.use { it.findAll() }
 
     private fun validateUserStatus(user: User) {
         if (user.status != UserStatus.APPROVED)
-            throw UserNotApprovedException(user.id)
+            throwException<UserNotApprovedException>(user.id)
     }
 
     private fun findUserWalletThatContainEnoughCryptoCurrency(
