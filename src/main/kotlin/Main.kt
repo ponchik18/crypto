@@ -86,7 +86,7 @@ fun main(args: Array<String>) {
     try {
         tradingService.exchangeCryptoCurrency(
             userList[0].wallets.first(),
-            "123456789",
+            "12345678",
             cryptoExchangeList[0],
             USD,
             userList[0]
@@ -122,7 +122,7 @@ fun main(args: Array<String>) {
     println("===========================5)'When' block ===========================")
     val transactionRepository = TransactionRepository
     val transactionList = transactionRepository.findAll()
-    for(transaction in transactionList)
+    for (transaction in transactionList)
         println(getUserTransaction(transaction))
 
     println("===========================6)Get user with transform email ===========================")
@@ -133,7 +133,7 @@ fun main(args: Array<String>) {
 
     println("===========================8)Filter user by wallets ===========================")
     val filteredUserList = filterListOfUserByNumberOfWallets(userList, 2)
-    filteredUserList.forEachIndexed{index, user ->
+    filteredUserList.forEachIndexed { index, user ->
         println("User$index has ${user.numberOfWallets} wallets")
     }
 
@@ -149,13 +149,16 @@ fun main(args: Array<String>) {
     println("===========================11)Destructuring declarations ===========================")
     println("1)Data class")
     val user = userList[0]
-    val (_,fullName) = user
+    val (_, fullName) = user
     println("User with full name: $fullName")
     println("User with wallets: ${user.component3()}")
     println("2)Class")
     val wallet = user.wallets.first()
     val (name) = wallet
     println("Wallet with name: $name")
+
+    println("===========================PART-3 ===========================")
+
 }
 
 fun initData() {
@@ -172,15 +175,20 @@ fun initData() {
     wallet5.topUpWallet(BTC, BigDecimal.valueOf(4))
     val wallet6 = Wallet("wallet6", false, "123456789")
     wallet6.topUpWallet(BTC, BigDecimal.valueOf(4))
+    val wallet7 = wallet1 + wallet2
 
     val user1 = User("test1@gmail.com", "Test1 Test1", mutableSetOf(wallet1, wallet4), UserStatus.APPROVED)
     val user2 = User("test2@gmail.com", "Test2 Test2", mutableSetOf(wallet2, wallet5, wallet6), UserStatus.APPROVED)
-    val user3 = User("test3@gmail.com", "Test3 Test3", mutableSetOf(wallet3), UserStatus.APPROVED)
-    userRepository.save(user1)
-    userRepository.save(user2)
-    userRepository.save(user3)
+    val user3 = User("test3@gmail.com", "Test3 Test3", mutableSetOf(wallet3, wallet7), UserStatus.APPROVED)
+    userRepository.use {
+        it.save(user1)
+        it.save(user2)
+        it.save(user3)
+    }
 
     val cryptoExchange = CryptoExchange("Binance")
     cryptoExchange.exchangeRates[Pair(BTC, USD)] = BigDecimal.valueOf(43125)
-    cryptoExchangeRepository.save(cryptoExchange)
+    cryptoExchangeRepository.use {
+        it.save(cryptoExchange)
+    }
 }

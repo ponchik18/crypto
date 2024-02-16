@@ -3,7 +3,6 @@ package service
 import domain.CryptoExchange
 import domain.User
 import domain.Wallet
-import repository.impl.CryptoExchangeRepository
 import repository.impl.UserRepository
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -13,7 +12,6 @@ import java.util.*
 object UserService {
 
     private val userRepository = UserRepository
-    private val cryptoExchangeRepository = CryptoExchangeRepository
     fun cryptoBalance(vararg wallets: Wallet) {
         for (wallet in wallets) {
             for ((key, value) in wallet.cryptoCurrencies) {
@@ -31,13 +29,21 @@ object UserService {
     }
 
     fun createWallet(wallet: Wallet, userId: UUID) {
-        val existingUser = userRepository.findById(userId)
+        val existingUser = userRepository.use {
+            it.findById(userId)
+        }
         existingUser?.wallets?.add(wallet)
     }
 
-    fun createUser(user: User) = userRepository.save(user)
+    fun createUser(user: User) = userRepository.use {
+        it.save(user)
+    }
 
-    fun getUserById(id: UUID): User? = userRepository.findById(id)
+    fun getUserById(id: UUID): User? = userRepository.use {
+        it.findById(id)
+    }
 
-    fun getAllUser(): List<User> = userRepository.findAll()
+    fun getAllUser(): List<User> = userRepository.use {
+        it.findAll()
+    }
 }

@@ -1,0 +1,16 @@
+UserRepository end his work! Time = 1708067131812
+CryptoExchangeRepository end his work! Time = 1708067131828
+UserRepository end his work! Time = 1708067131828
+UserRepository end his work! Time = 1708067131828
+CryptoExchangeRepository end his work! Time = 1708067131828
+UserRepository end his work! Time = 1708068511257
+CryptoExchangeRepository end his work! Time = 1708068511259
+UserRepository end his work! Time = 1708068511260
+UserRepository end his work! Time = 1708068511260
+CryptoExchangeRepository end his work! Time = 1708068511260
+UserRepository end his work! Time = 1708068511282
+UserRepository end his work! Time = 1708068639146
+CryptoExchangeRepository end his work! Time = 1708068641588
+UserRepository end his work! Time = 1708068641588
+UserRepository end his work! Time = 1708068641589
+CryptoExchangeRepository end his work! Time = 1708068641590
